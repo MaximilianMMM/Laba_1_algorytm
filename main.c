@@ -1,92 +1,49 @@
-// Визначити, що більше: сума додатних і сума модулів від’ємних елементів черги. Черга заповнена цілими числами.
+
+//Дано стек заповнений цілими числами випадковим чином. Видалити зі стека всі числа не кратні заданому з клавіатури.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-// Структура черги
-typedef struct Queue{
-    int* elements;
-    int front;
-    int rear;
-    int capacity;
-} Queue;
+int element, top_stc = 0, top_stc_copy = 0;
+int stack[50], stack_copy[50];
 
-// Функція для ініціалізації черги
-Queue* createQueue(int capacity){
-    Queue* queue = (Queue*)malloc(sizeof(Queue));
-    queue->capacity = capacity;
-    queue->elements = (int*)malloc(sizeof(int) * capacity);
-    queue->front = queue->rear = -1;
-    return queue;
+
+void push(int element, int stc){
+    if(top_stc < 50 && stc == 1) stack[top_stc++] = element;
+    else if (top_stc_copy < 50 && stc != 1) stack_copy[top_stc_copy++] = element;
+    else printf("Стек переповнений");
 }
 
-// Функція для додавання елемента в чергу
-void enqueue(Queue* queue, int num){
-    if (queue->rear == queue->capacity - 1){
-        printf("Черга переповнена.\n");
-        return;
-    }
-
-    if (queue->front == -1){
-        queue->front = 0;
-    }
-
-    queue->rear++;
-    queue->elements[queue->rear] = num;
+int pop(){
+    if(top_stc >= 1) element = stack[--top_stc];
+    else printf("Стек пустий");
+    return element;
 }
 
-// Функція для обчислення суми додатних чисел в черзі
-int sumPositive(Queue* queue){
-    int sum = 0;
-    for (int i = queue->front; i <= queue->rear; i++){
-        if (queue->elements[i] > 0){
-            sum += queue->elements[i];
-        }
+int main() {
+    int n, a;
+
+    srand(time(NULL));
+
+    for(int i = 0; i < 50; i++){
+        a = rand() % 201 - 100;
+        printf("%d ", a);
+        push(a, 1);
     }
-    return sum;
-}
 
-// Функція для обчислення суми модулів від'ємних чисел в черзі
-int sumNegativeMod(Queue* queue){
-    int sum = 0;
-    for (int i = queue->front; i <= queue->rear; i++){
-        if (queue->elements[i] < 0){
-            sum += abs(queue->elements[i]);
-        }
-    }
-    return sum;
-}
-
-int main(){
-    int n, num;
-
-    printf("Введіть кількість елементів у черзі: ");
+    printf("\nВведіть число:");
     scanf("%d", &n);
 
-    Queue* queue = createQueue(n);
-
-    for (int i = 0; i < n; i++){
-        printf("Введіть %d-й елемент черги: ", i + 1);
-        scanf("%d", &num);
-        enqueue(queue, num);
+    for(int i = 0; i < 50; i++){
+        element = pop();
+        if(element % n == 0) continue;
+        else push(element, 2);
     }
 
-    int sumPos = sumPositive(queue);
-    int sumNegMod = sumNegativeMod(queue);
-
-    if (sumPos > sumNegMod){
-        printf("Сума додатних чисел більша.\n");
+    for(int i = top_stc_copy - 1; i >= 0; i--){
+        printf("%d ", stack_copy[i]);
     }
-    else if (sumPos < sumNegMod){
-        printf("Сума модулів від'ємних чисел більша.\n");
-    }
-    else{
-        printf("Сума додатних чисел і сума модулів від'ємних чисел рівні.\n");
-    }
-
-    free(queue->elements);
-    free(queue);
 
     return 0;
 }
-
